@@ -1,0 +1,19 @@
+model Question {
+  id        Int          @id @default(autoincrement())
+  text      String
+  type      QuestionType
+  points    Int          @default(1)
+
+  contestId Int
+  contest   Contest      @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  options   Option[]
+
+  @@map("questions")
+}
+
+enum QuestionType {
+  SINGLE
+  MULTI
+  BOOLEAN
+}

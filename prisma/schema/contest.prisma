@@ -1,0 +1,20 @@
+model Contest {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?
+  accessLevel AccessLevel @default(NORMAL)
+  startTime   DateTime
+  endTime     DateTime
+  prizeInfo   String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  questions   Question[]
+
+  @@map("contests")
+}
+
+enum AccessLevel {
+  NORMAL
+  VIP
+}
