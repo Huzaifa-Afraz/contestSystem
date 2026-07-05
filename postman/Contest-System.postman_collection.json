@@ -1,0 +1,161 @@
+{
+  "info": {
+    "name": "Contest System API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"newuser@gmail.com\",\n  \"username\": \"newuser\",\n  \"password\": \"Password123!\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (admin)",
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const res = pm.response.json();", "if (res.token) { pm.environment.set('token', res.token); }" ] } } ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@gmail.com\",\n  \"password\": \"Password123!\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (vip)",
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const res = pm.response.json();", "if (res.token) { pm.environment.set('token', res.token); }" ] } } ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"vip@gmail.com\",\n  \"password\": \"Password123!\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (normal)",
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const res = pm.response.json();", "if (res.token) { pm.environment.set('token', res.token); }" ] } } ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"normal@gmail.com\",\n  \"password\": \"Password123!\"\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Me (profile)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "auth", "me"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Contests",
+      "item": [
+        {
+          "name": "List contests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contests?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["api", "contests"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get contest by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contests/{{contestId}}", "host": ["{{baseUrl}}"], "path": ["api", "contests", "{{contestId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create contest",
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const res = pm.response.json();", "if (res.id) { pm.environment.set('contestId', res.id); }" ] } } ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"General Knowledge Sprint\",\n  \"description\": \"A quick quiz\",\n  \"accessLevel\": \"NORMAL\",\n  \"startTime\": \"2025-01-01T00:00:00.000Z\",\n  \"endTime\": \"2030-01-01T00:00:00.000Z\",\n  \"prizeInfo\": \"Gift card\",\n  \"questions\": [\n    {\n      \"text\": \"Capital of France?\",\n      \"type\": \"SINGLE\",\n      \"points\": 1,\n      \"options\": [\n        { \"text\": \"Paris\", \"isCorrect\": true },\n        { \"text\": \"Lyon\", \"isCorrect\": false }\n      ]\n    },\n    {\n      \"text\": \"The Earth is flat.\",\n      \"type\": \"BOOLEAN\",\n      \"points\": 1,\n      \"options\": [\n        { \"text\": \"True\", \"isCorrect\": false },\n        { \"text\": \"False\", \"isCorrect\": true }\n      ]\n    }\n  ]\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/api/contests", "host": ["{{baseUrl}}"], "path": ["api", "contests"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contests/{{contestId}}/leaderboard?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["api", "contests", "{{contestId}}", "leaderboard"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Participation",
+      "item": [
+        {
+          "name": "Join contest",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/contests/{{contestId}}/join", "host": ["{{baseUrl}}"], "path": ["api", "contests", "{{contestId}}", "join"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Submit answers",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "{\n  \"answers\": [\n    { \"questionId\": 1, \"selectedOptionIds\": [1] },\n    { \"questionId\": 2, \"selectedOptionIds\": [4, 6] },\n    { \"questionId\": 3, \"selectedOptionIds\": [8] }\n  ]\n}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/api/contests/{{contestId}}/submit", "host": ["{{baseUrl}}"], "path": ["api", "contests", "{{contestId}}", "submit"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Me (history)",
+      "item": [
+        {
+          "name": "My participations",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/me/participations", "host": ["{{baseUrl}}"], "path": ["api", "me", "participations"] }
+          },
+          "response": []
+        },
+        {
+          "name": "My prizes",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/me/prizes", "host": ["{{baseUrl}}"], "path": ["api", "me", "prizes"] }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
