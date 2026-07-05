@@ -20,7 +20,7 @@ async function seedUsers() {
     // upsert = safe to re-run; ensures the role is correct even if the user exists.
     await prisma.user.upsert({
       where: { email: u.email },
-      update: { role: u.role },
+      update: { role: u.role, password: hashed },
       create: { ...u, password: hashed },
     });
   }
