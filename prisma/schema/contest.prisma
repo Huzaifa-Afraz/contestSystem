@@ -11,6 +11,9 @@ model Contest {
 
   questions   Question[]
 
+
+participations Participation[]
+prize Prize?
   @@map("contests")
 }
 

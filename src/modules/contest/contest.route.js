@@ -19,4 +19,6 @@ router.post(
   contestController.create
 );
 
+router.get('/:id/leaderboard', contestController.leaderboard);
+
 export default router;

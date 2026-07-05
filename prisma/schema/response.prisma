@@ -1,0 +1,16 @@
+model Response {
+  id              Int      @id @default(autoincrement())
+  awardedPoints   Int      @default(0)
+  isCorrect       Boolean  @default(false)
+
+  participationId Int
+  participation   Participation @relation(fields: [participationId], references: [id], onDelete: Cascade)
+
+  questionId      Int
+  question        Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  // which options the user picked (many-to-many)
+  selectedOptions Option[]
+
+  @@map("responses")
+}

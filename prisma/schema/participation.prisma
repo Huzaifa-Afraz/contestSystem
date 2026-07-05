@@ -1,0 +1,24 @@
+model Participation {
+  id          Int                 @id @default(autoincrement())
+  status      ParticipationStatus @default(IN_PROGRESS)
+  score       Int                 @default(0)
+  startedAt   DateTime            @default(now())
+  submittedAt DateTime?
+
+  userId      Int
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  contestId   Int
+  contest     Contest             @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  responses   Response[]
+
+  // A user can only participate in a given contest once.
+  @@unique([userId, contestId])
+  @@map("participations")
+}
+
+enum ParticipationStatus {
+  IN_PROGRESS
+  SUBMITTED
+}

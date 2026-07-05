@@ -58,3 +58,24 @@ export const getContestById = async (id) => {
   if (!contest) throw new ApiError(404, 'Contest not found');
   return contest;
 };
+
+export const getLeaderboard = async (contestId) => {
+  const contest = await prisma.contest.findUnique({ where: { id: contestId } });
+  if (!contest) throw new ApiError(404, 'Contest not found');
+
+  const rows = await prisma.participation.findMany({
+    where: { contestId, status: 'SUBMITTED' },
+    orderBy: [
+      { score: 'desc' },        // highest score first
+      { submittedAt: 'asc' },   // tie-break: whoever submitted earlier ranks higher
+    ],
+    select: {
+      score: true,
+      submittedAt: true,
+      user: { select: { id: true, username: true } },
+    },
+  });
+
+  // Add a rank number (1-based) to each row.
+  return rows.map((row, index) => ({ rank: index + 1, ...row }));
+};

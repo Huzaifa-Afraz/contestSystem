@@ -8,6 +8,7 @@ model Question {
   contest   Contest      @relation(fields: [contestId], references: [id], onDelete: Cascade)
 
   options   Option[]
+responses Response[]
 
   @@map("questions")
 }

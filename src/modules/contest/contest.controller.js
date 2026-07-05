@@ -19,3 +19,11 @@ export const getOne = asyncHandler(async (req, res) => {
   const contest = await contestService.getContestById(id);
   res.json(contest);
 });
+
+export const leaderboard = asyncHandler(async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) throw new ApiError(400, 'Invalid contest id');
+
+  const board = await contestService.getLeaderboard(id);
+  res.json(board);
+});
