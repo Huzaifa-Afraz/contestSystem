@@ -1,19 +1,27 @@
 import rateLimit from 'express-rate-limit';
+import { RedisStore } from 'rate-limit-redis';
+import redis from '../config/redis.js';
 
-// General API limiter — generous, just a safety net against abuse.
+// Shared store factory — sendCommand routes through ioredis.
+const store = () =>
+  new RedisStore({
+    sendCommand: (...args) => redis.call(...args),
+  });
+
 export const apiLimiter = rateLimit({
-  windowMs: 60 * 1000,   // 1 minute
-  max: 100,              // 100 requests/min per IP
-  standardHeaders: true, // send RateLimit-* headers so clients can self-throttle
+  windowMs: 60 * 1000,
+  max: 100,
+  standardHeaders: true,
   legacyHeaders: false,
+  store: store(),
   message: { error: 'Too many requests, please try again later' },
 });
 
-// Strict limiter for auth — slows brute-force / credential-stuffing on login.
 export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,                  // 10 attempts per 15 min per IP
+  windowMs: 15 * 60 * 1000,
+  max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  store: store(),
   message: { error: 'Too many attempts, please try again later' },
 });

@@ -1,6 +1,7 @@
 import prisma from '../../config/prisma.js';
 import ApiError from '../../utils/ApiError.js';
 import { scoreQuestion } from './scoring.js';
+import redis from '../../config/redis.js';
 
 // Access rule from the brief: VIP/ADMIN can access anything; NORMAL only NORMAL contests.
 const canAccess = (userRole, accessLevel) => {
@@ -89,6 +90,13 @@ export const submitAnswers = async (user, contestId, answers) => {
       },
     }),
   ]);
+
+  try {
+  const keys = await redis.keys(`leaderboard:${contestId}:*`);
+  if (keys.length) await redis.del(keys);
+} catch (err) {
+  console.error('cache invalidation failed:', err.message);
+}
 
   const maxScore = contest.questions.reduce((sum, q) => sum + q.points, 0);
   return { participationId: updated.id, score: totalScore, maxScore };

@@ -1,6 +1,7 @@
 import prisma from '../../config/prisma.js';
 import ApiError from '../../utils/ApiError.js';
 import { getPagination, buildMeta } from '../../utils/pagination.js';
+import { cacheGet, cacheSet } from '../../config/cache.js';
 // Admin create: one nested write creates the contest, its questions, and their options.
 export const createContest = async (data) => {
   return prisma.contest.create({
@@ -67,11 +68,16 @@ export const getContestById = async (id) => {
   return contest;
 };
 
+
 export const getLeaderboard = async (contestId, query) => {
   const contest = await prisma.contest.findUnique({ where: { id: contestId } });
   if (!contest) throw new ApiError(404, 'Contest not found');
 
   const { page, limit, skip } = getPagination(query);
+  const cacheKey = `leaderboard:${contestId}:page:${page}:limit:${limit}`;
+
+  const cached = await cacheGet(cacheKey);
+  if (cached) return cached;
 
   const [rows, total] = await prisma.$transaction([
     prisma.participation.findMany({
@@ -79,15 +85,16 @@ export const getLeaderboard = async (contestId, query) => {
       orderBy: [{ score: 'desc' }, { submittedAt: 'asc' }],
       skip,
       take: limit,
-      select: {
-        score: true,
-        submittedAt: true,
-        user: { select: { id: true, username: true } },
-      },
+      select: { score: true, submittedAt: true, user: { select: { id: true, username: true } } },
     }),
     prisma.participation.count({ where: { contestId, status: 'SUBMITTED' } }),
   ]);
 
-  const data = rows.map((row, i) => ({ rank: skip + i + 1, ...row }));
-  return { data, meta: buildMeta(total, page, limit) };
+  const result = {
+    data: rows.map((row, i) => ({ rank: skip + i + 1, ...row })),
+    meta: buildMeta(total, page, limit),
+  };
+
+  await cacheSet(cacheKey, result);
+  return result;
 };
